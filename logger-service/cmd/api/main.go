@@ -66,11 +66,14 @@ func main() {
 
 // connectToDB initializes a connection to MongoDB
 func connectToDB() (*mongo.Client, error) {
-	// Build MongoDB URI using environment variables
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s",
+	// Build MongoDB URI using environment variables and specify the authentication database
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
 		MongoUser, MongoPass, MongoHost, MongoPort, MongoDBName)
 
+	// Set client options and apply the URI
 	clientOptions := options.Client().ApplyURI(uri)
+
+	// Connect to the MongoDB client
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return nil, err
@@ -82,13 +85,20 @@ func connectToDB() (*mongo.Client, error) {
 		return nil, err
 	}
 
+	// Print a success message if connected
 	fmt.Println("✅ Connected to MongoDB")
 	return client, nil
 }
 
 // connectToRabbitMQ initializes a RabbitMQ connection
 func connectToRabbitMQ() (*amqp.Connection, *amqp.Channel, error) {
-	conn, err := amqp.Dial("amqp://user:password@rabbitmq:5672/")
+	conn, err := amqp.Dial(fmt.Sprintf(
+		"amqp://%s:%s@%s:%s/",
+		RabbitUser,
+		RabbitPass,
+		RabbitHost,
+		RabbitPort,
+	))
 	if err != nil {
 		return nil, nil, err
 	}

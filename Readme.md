@@ -16,3 +16,7 @@ MongoDB will store your logs. Your Logger Service will take messages from Rabbit
 # Example Request to Fetch Logs:
 
 curl -X GET "http://localhost:8081/logs?service_name=auth-service"
+
+# Logger Service: Running on port 8081.
+# RabbitMQ: Running on port 5672 and the management UI is available on port 15672.
+# MongoDB: Running on port 27017.

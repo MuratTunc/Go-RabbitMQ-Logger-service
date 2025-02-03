@@ -1,15 +1,25 @@
 # Environment file and variables
 ENV_FILE := .env
 
-## up_build: Stops and removes all running containers, builds the project and starts docker-compose
-build: stop_all_containers down build_logger_service
+## build: Stops and removes all running containers, checks for MongoDB process, builds the project, and starts docker-compose
+build: stop_all_containers check_mongo_process down build_logger_service
 	echo "🚀 Building (when required) and starting docker images with environment variables..."
 	docker-compose up --build -d
 	echo "✅ Docker images built and started!"
 	echo "📜 Fetching logs for all services..."
 	docker-compose logs --tail=50
-	echo "🚀 Runnig Containers:"
+	echo "🚀 Running Containers:"
 	docker ps
+
+## check_mongo_process: Checks if MongoDB is already running on port 27017 and stops the build if found
+check_mongo_process:
+	echo "🔍 Checking if MongoDB is already running on port 27017..."
+	@if lsof -i :27017 | grep LISTEN; then \
+		echo "❌ Error: MongoDB is already running on port 27017. Stop the process before continuing."; \
+		exit 1; \
+	else \
+		echo "✅ No MongoDB instance detected on port 27017. Proceeding..."; \
+	fi
 
 ## stop_all_containers: Stops and removes all running Docker containers (if any exist)
 stop_all_containers:
@@ -24,7 +34,7 @@ stop_all_containers:
 		echo "⚡ No running containers found. Skipping stop and remove."; \
 	fi
 
-## down: stop docker-compose
+## down: Stops docker-compose
 down:
 	echo "🛑 Stopping docker-compose..."
 	docker-compose down

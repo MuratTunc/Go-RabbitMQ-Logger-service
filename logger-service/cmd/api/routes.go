@@ -33,5 +33,7 @@ func (app *Config) routes() http.Handler {
 	// Calls GetLogsHandler for /logs requests (GET request to fetch logs by service name)
 	mux.Get("/logs", app.GetLogsHandler)
 
+	mux.Get("/logs/all", app.GetAllLogsHandler)
+
 	return mux
 }

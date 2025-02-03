@@ -8,7 +8,8 @@ LOG_MESSAGE="Test log message"
 
 # Step 1: Send a POST request to the logger service
 echo "Sending POST request to logger service to insert log..."
-response=$(curl -s -X POST $LOGGER_URL -H "Content-Type: application/json" -d '{"service_name": "'$SERVICE_NAME'", "log_message": "'$LOG_MESSAGE'"}')
+echo "Request Body: {\"service_name\": \"$SERVICE_NAME\", \"log_message\": \"$LOG_MESSAGE\"}"  # Use double quotes
+response=$(curl -s -X POST $LOGGER_URL -H "Content-Type: application/json" -d "{\"service_name\": \"$SERVICE_NAME\", \"log_message\": \"$LOG_MESSAGE\"}")
 
 # Check if the POST request was successful
 if [[ "$response" == "Log saved successfully" ]]; then
