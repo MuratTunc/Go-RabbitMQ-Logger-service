@@ -10,3 +10,9 @@ docker-compose.yml makes all of this work by ensuring that:
 # Architecture in Docker   
 RabbitMQ will be responsible for message queues. Your Logger Service will send logs to RabbitMQ.
 MongoDB will store your logs. Your Logger Service will take messages from RabbitMQ and store them in MongoDB.
+
+
+
+# Example Request to Fetch Logs:
+
+curl -X GET "http://localhost:8081/logs?service_name=auth-service"
