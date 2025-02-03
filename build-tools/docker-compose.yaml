@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    image: logger-service-img
+    restart: always
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "${LOGGER_SERVICE_PORT}:${LOGGER_SERVICE_PORT}"
+    env_file:
+      - .env  # Load environment variables from .env
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    ports:
+      - "5672:5672"  # RabbitMQ message broker port
+      - "15672:15672"  # RabbitMQ management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  mongo-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
