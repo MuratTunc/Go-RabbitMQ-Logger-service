@@ -9,7 +9,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	// Import your models package if necessary (example: "yourapp/models")
 )
 
 // LogHandler receives logs from HTTP requests and stores them in MongoDB

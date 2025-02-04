@@ -14,7 +14,7 @@ func (app *Config) routes() http.Handler {
 
 	// CORS Middleware
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // Allow requests from React frontend
+		AllowedOrigins:   []string{"http://localhost:3000"}, // Allow requests from React frontend if you have.
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -27,12 +27,13 @@ func (app *Config) routes() http.Handler {
 	mux.Use(middleware.Recoverer)          // Recover from panics
 	mux.Use(middleware.Logger)             // Log requests
 
-	// Calls LogHandler for /log requests
+	// Calls LogHandler for /log requests (POST Request)
 	mux.Post("/log", app.LogHandler)
 
 	// Calls GetLogsHandler for /logs requests (GET request to fetch logs by service name)
 	mux.Get("/logs", app.GetLogsHandler)
 
+	// Calls GetAllLogsHandler for /logs/all requests (GET request to fetch logs by service name)
 	mux.Get("/logs/all", app.GetAllLogsHandler)
 
 	return mux

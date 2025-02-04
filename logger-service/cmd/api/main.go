@@ -52,7 +52,7 @@ func main() {
 	go app.consumeLogs(rabbitChannel)
 
 	// Start HTTP server
-	fmt.Printf("🚀 %s is running on port: %s\n", ServiceName, ServicePort)
+	fmt.Printf("%s is running on port: %s\n", ServiceName, ServicePort)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", ServicePort),
 		Handler: app.routes(),
