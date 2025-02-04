@@ -5,7 +5,8 @@ services:
     build:
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile
-    image: ${LOGGER_SERVICE_CONTAINER_NAME}
+    image: logger-service
+    container_name: ${LOGGER_SERVICE_CONTAINER_NAME}
     restart: always
     depends_on:
       - mongo

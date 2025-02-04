@@ -7,7 +7,7 @@ build: stop_all_containers check_mongo_process down build_logger_service
 	docker-compose up --build -d
 	echo "✅ Docker images built and started!"
 	echo "📜 Fetching logs for all services..."
-	docker-compose logs --tail=50
+	docker-compose logs --tail=1
 	echo "🚀 Running Containers:"
 	docker ps
 

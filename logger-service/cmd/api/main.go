@@ -127,33 +127,42 @@ func connectToRabbitMQ() (*amqp.Connection, *amqp.Channel, error) {
 // consumeLogs listens for messages from RabbitMQ and stores them in MongoDB
 func (app *Config) consumeLogs(ch *amqp.Channel) {
 	msgs, err := ch.Consume(
-		"log_queue",
-		"",
-		true,
-		false,
-		false,
-		false,
-		nil,
+		"log_queue", // Queue name
+		"",          // Consumer name (auto-generated)
+		true,        // Auto-acknowledge (set to false if manual ack is needed)
+		false,       // Exclusive
+		false,       // No local (not used by RabbitMQ)
+		false,       // No wait
+		nil,         // Additional args
 	)
 	if err != nil {
-		log.Fatal("❌ Failed to consume messages from RabbitMQ:", err)
+		log.Fatal("Failed to consume messages from RabbitMQ:", err)
 	}
 
-	fmt.Println("🎧 Listening for logs on RabbitMQ...")
+	fmt.Println("🎧 Listening for logs from RabbitMQ...")
 
-	for msg := range msgs {
-		var logEntry LogEntry
-		json.Unmarshal(msg.Body, &logEntry)
+	// Use a goroutine to process messages asynchronously
+	go func() {
+		for msg := range msgs {
+			var logEntry LogEntry
+			err := json.Unmarshal(msg.Body, &logEntry)
+			if err != nil {
+				log.Println("Failed to unmarshal log message:", err)
+				continue
+			}
 
-		logEntry.ID = primitive.NewObjectID()
-		logEntry.CreatedAt = time.Now()
+			// Assign a new ID and timestamp
+			logEntry.ID = primitive.NewObjectID()
+			logEntry.CreatedAt = time.Now()
 
-		collection := app.DB.Database("logDB").Collection("logs")
-		_, err := collection.InsertOne(context.TODO(), logEntry)
-		if err != nil {
-			log.Println("❌ Failed to insert log into MongoDB:", err)
+			// Insert log into MongoDB
+			collection := app.DB.Database("logDB").Collection("logs")
+			_, err = collection.InsertOne(context.TODO(), logEntry)
+			if err != nil {
+				log.Println("Failed to insert log into MongoDB:", err)
+			} else {
+				fmt.Println("✅ Log saved:", logEntry)
+			}
 		}
-
-		fmt.Println("✅ Log saved:", logEntry)
-	}
+	}()
 }
